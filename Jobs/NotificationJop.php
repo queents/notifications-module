@@ -16,17 +16,17 @@ class NotificationJop implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public $title;
-    public $message;
-    public $icon;
-    public $url;
-    public $image;
-    public $type;
-    public $privacy;
-    public $model;
-    public $model_id;
-    public $provider;
-    public $user;
+    public ?string $title;
+    public ?string $message;
+    public ?string $icon;
+    public ?string $url;
+    public ?string $image;
+    public ?string $type;
+    public ?string $privacy;
+    public ?string $model;
+    public ?string $model_id;
+    public ?string $provider;
+    public ?object $user;
 
     /**
      * Create a new notification instance.
@@ -35,7 +35,6 @@ class NotificationJop implements ShouldQueue
      */
     public function __construct($arrgs)
     {
-
         $this->title = $arrgs['title'];
         $this->message  = $arrgs['message'];
         $this->icon  = $arrgs['icon'];
@@ -57,47 +56,26 @@ class NotificationJop implements ShouldQueue
      */
     public function handle()
     {
-        if ($this->provider === 'pusher' || $this->provider === 'fcm-api' || $this->provider === 'fcm-web' || $this->provider === 'email') {
-            if ($this->provider === 'fcm-api' || $this->provider === 'fcm-web') {
-                $this->user->fcm = $this->provider;
-                $this->user->fcmId = $this->user->id;
-            } else {
-                $this->user->fcm = "fcm-api";
-                $this->user->fcmId = $this->user->id;
-            }
-            if ((!empty($this->user->userTokensFcm)) && ($this->provider === 'fcm-api' || $this->provider === 'fcm-web')) {
-                $this->user->notify(new NotificationService(
-                    $this->title,
-                    $this->message,
-                    $this->icon,
-                    (string)$this->image,
-                    $this->url,
-                    $this->type,
-                    $this->privacy,
-                    $this->provider,
-                    $this->model,
-                    (string)$this->model_id
-                ));
-            } else if ($this->provider === 'pusher' ||  $this->provider === 'email') {
-                $this->user->notify(new NotificationService(
-                    $this->title,
-                    $this->message,
-                    $this->icon,
-                    (string)$this->image,
-                    $this->url,
-                    $this->type,
-                    $this->privacy,
-                    $this->provider,
-                    $this->model,
-                    (string)$this->model_id
-                ));
-            }
-        } else if ($this->provider === 'sms') {
-            if ($this->user->phone) {
-                // FIXME: SMS Service
-                $sms = [];
-            }
+        if ($this->provider === 'fcm-api' || $this->provider === 'fcm-web') {
+            $this->user->fcm = $this->provider;
+            $this->user->fcmId = $this->user->id;
+        } else {
+            $this->user->fcm = "fcm-api";
+            $this->user->fcmId = $this->user->id;
         }
+
+        $this->user->notify(new NotificationService(
+            $this->title,
+            $this->message,
+            $this->icon,
+            (string)$this->image,
+            $this->url,
+            $this->type,
+            $this->privacy,
+            $this->provider,
+            $this->model,
+            (string)$this->model_id
+        ));
 
         $log = new NotificationsLogs();
         $log->title = $this->title;

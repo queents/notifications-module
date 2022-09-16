@@ -10,10 +10,15 @@ use Modules\Base\Services\Rows\Schema;
 use Modules\Base\Services\Rows\Select;
 use Modules\Base\Services\Rows\Text;
 use Modules\Notifications\Entities\NotifiactionsTemplates;
+use Modules\Notifications\Vilt\Resources\TemplatesResource\Traits\Components;
+use Modules\Notifications\Vilt\Resources\TemplatesResource\Traits\Methods;
 use Spatie\Permission\Models\Role;
 
 class TemplatesResource extends Resource
 {
+    use Methods;
+    use Components;
+
     public ?string $model = NotifiactionsTemplates::class;
     public string $icon = "bx bxs-notification";
     public string $group = "Notifications";
@@ -33,10 +38,16 @@ class TemplatesResource extends Resource
                 "create" => "required|string|max:255",
                 "update" => "required|string|max:255"
             ]),
-            Text::make('key')->label(__('Key'))->validation([
-                "create" => "required|string",
-                "update" => "required|string"
-            ])->unique(true)->list(false),
+            Text::make('key')
+                ->label(__('Key'))
+                ->badge()
+                ->color('primary')
+                ->validation([
+                    "create" => "required|string",
+                    "update" => "required|string"
+                ])
+                ->unique(true)
+                ->hint(__('Key must be unique because you can use it on your system')),
             Schema::make('title')->label(__('Title'))->options($loadLocals)->validation([
                 "create" => "required|array",
                 "update" => "required|array"
@@ -45,10 +56,13 @@ class TemplatesResource extends Resource
                 "create" => "required|array",
                 "update" => "required|array"
             ])->list(false),
-            Text::make('url')->label(__('Url'))->validation([
-                "create" => "nullable|string",
-                "update" => "nullable|string",
-            ]),
+            Text::make('url')
+                ->url()
+                ->label(__('Url'))
+                ->validation([
+                    "create" => "nullable|string",
+                    "update" => "nullable|string",
+                ]),
             Text::make('icon')->label(__('Icon'))->validation([
                 "create" => "nullable|string",
                 "update" => "nullable|string",
@@ -73,24 +87,7 @@ class TemplatesResource extends Resource
             Select::make('providers')->label(__('Providers'))->validation([
                 "create" => "required|array",
                 "update" => "required|array",
-            ])->list(false)->multi(true)->options([
-                [
-                    "name" => __('Email'),
-                    "id" => "email"
-                ],
-                [
-                    "name" => __('FCM Web'),
-                    "id" => "fcm-web"
-                ],
-                [
-                    "name" => __('FCM Mobile'),
-                    "id" => "fcm-api"
-                ],
-                [
-                    "name" => __('SMS'),
-                    "id" => "sms"
-                ]
-            ])->trackByName('name')->trackById('id'),
+            ])->list(false)->multi(true)->options(config('notifications.providers'))->trackByName('name')->trackById('id'),
             Relation::make('roles')->label(__('Roles'))->validation([
                 "create" => "nullable|array",
                 "update" => "nullable|array"
@@ -98,25 +95,5 @@ class TemplatesResource extends Resource
         ];
     }
 
-    public function afterStore(Request $request, $record): void
-    {
-        if ($request->has('roles')) {
-            foreach ($request->get('roles') as $role) {
-                $record->roles()->attach($role['id']);
-            }
-        }
-    }
 
-    public function afterUpdate(Request $request, $record): void
-    {
-        $roles = [];
-
-        if ($request->has('roles')) {
-            foreach ($request->get('roles') as $role) {
-                $roles[] = $role['id'];
-            }
-        }
-
-        $record->roles()->sync($roles);
-    }
 }

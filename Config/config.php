@@ -44,8 +44,42 @@ return [
         User::class
     ],
 
-    'slack' => [
-        "hook" => env('SLACK_HOOK', null),
-        "reporting" => env('SLACK_REPORTING', false),
-    ]
+    'providers' => [
+        [
+            "name" => __('Database'),
+            "id" => "database"
+        ],
+        [
+            "name" => __('Email'),
+            "id" => "email"
+        ],
+        [
+            "name" => __('Slack'),
+            "id" => "slack",
+        ],
+        [
+            "name" => __('Discord'),
+            "id" => "discord"
+        ],
+        [
+            "name" => __('FCM Web'),
+            "id" => "fcm-web"
+        ],
+        [
+            "name" => __('FCM Mobile'),
+            "id" => "fcm-api"
+        ],
+        [
+            "name" => __('Pusher Web'),
+            "id" => "pusher-web"
+        ],
+        [
+            "name" => __('Pusher Mobile'),
+            "id" => "pusher-api"
+        ],
+        [
+            "name" => __('SMS MessageBird'),
+            "id" => "sms-messagebird"
+        ]
+    ],
 ];

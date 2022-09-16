@@ -3,6 +3,7 @@
 namespace Modules\Notifications\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Support\Facades\File;
 use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
@@ -15,28 +16,47 @@ use NotificationChannels\Fcm\Resources\ApnsFcmOptions;
 use NotificationChannels\Fcm\Resources\AndroidFcmOptions;
 use NotificationChannels\Fcm\Resources\WebpushFcmOptions;
 use NotificationChannels\Fcm\Resources\AndroidNotification;
+use NotificationChannels\Messagebird\MessagebirdChannel;
+use NotificationChannels\Messagebird\MessagebirdMessage;
 use NotificationChannels\PusherPushNotifications\PusherChannel;
 use NotificationChannels\PusherPushNotifications\PusherMessage;
+use NotificationChannels\Discord\DiscordChannel;
+use NotificationChannels\Discord\DiscordMessage;
 
 class NotificationService extends Notification
 {
-    public $title;
-    public $message;
-    public $icon;
-    public $url;
-    public $image;
-    public $type;
-    public $privacy;
-    public $model;
-    public $model_id;
-    public $provider;
+    public ?string $title;
+    public ?string $message;
+    public ?string $icon;
+    public ?string $url;
+    public ?string $image;
+    public ?string $type;
+    public ?string $privacy;
+    public ?string $model;
+    public ?string $modelId;
+    public ?string $provider;
+    public ?string $phone;
+    public ?string $email;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($title, $message, $icon, $image, $url, $type, $privacy, $provider = "fcm-api", $model = null, $model_id = null)
+    public function __construct(
+        $title,
+        $message,
+        $icon,
+        $image,
+        $url,
+        $type,
+        $privacy,
+        $provider = "email",
+        $model = null,
+        $modelId = null,
+        $phone = null,
+        $email = null,
+    )
     {
         $this->title = $title;
         $this->message  = $message;
@@ -46,8 +66,10 @@ class NotificationService extends Notification
         $this->type  = $type;
         $this->privacy  = $privacy;
         $this->model  = $model;
-        $this->model_id  = $model_id;
+        $this->modelId  = $modelId;
         $this->provider  = $provider;
+        $this->phone  = $phone;
+        $this->email  = $email;
     }
 
     /**
@@ -56,18 +78,47 @@ class NotificationService extends Notification
      * @param mixed $notifiable
      * @return array
      */
-    public function via($notifiable)
+    public function via(mixed $notifiable): array
     {
-        if ($this->provider === 'email') {
-            return ['mail'];
-        } else if ($this->provider === 'fcm-api' || $this->provider === 'fcm-web') {
+        if ($this->provider === 'fcm-api' || $this->provider === 'fcm-web') {
             return [FcmChannel::class];
-        } else if ($this->provider === 'pusher') {
+        }
+
+        if ($this->provider === 'pusher-api' || $this->provider === 'pusher-web') {
             return [PusherChannel::class];
         }
+
+        if ($this->provider === 'slack') {
+            return ['slack'];
+        }
+
+        if ($this->provider === 'discord') {
+            return [DiscordChannel::class];
+        }
+
+        if ($this->provider === 'sms-messagebird') {
+            return [MessagebirdChannel::class];
+        }
+
+        return ['mail'];
     }
 
-    public function toFcm($notifiable)
+    public function toMail($notifiable): MailMessage
+    {
+        return (new MailMessage)
+            ->subject($this->title)
+            ->greeting($this->title)
+            ->line($this->message)
+            ->action('Open Link', $this->url)
+            ->line('Thank you for using our application!');
+    }
+
+    public function toMessagebird($notifiable): MessagebirdMessage
+    {
+        return (new MessagebirdMessage($this->message))->setRecipients($this->phone);
+    }
+
+    public function toFcm($notifiable): FcmMessage
     {
         return FcmMessage::create()
             ->setData([
@@ -99,8 +150,7 @@ class NotificationService extends Notification
             );
     }
 
-
-    public function toPushNotification($notifiable)
+    public function toPushNotification($notifiable): PusherMessage
     {
         return PusherMessage::create()
             ->web()
@@ -133,32 +183,24 @@ class NotificationService extends Notification
             );
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param mixed $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
-    public function toMail($notifiable)
+    public function toSlack($notifiable): SlackMessage
     {
-        return (new MailMessage)
-            ->subject($this->title)
-            ->greeting($this->title)
-            ->line($this->message)
-            ->action('Open Link', $this->url)
-            ->line('Thank you for using our application!');
+        $message = $this->message;
+        return (new SlackMessage)
+            ->error()
+            ->content('Whoops! Something went wrong.')
+            ->attachment(function ($attachment) use ($message) {
+                $attachment->title('Error on project ' . config('app.name'))
+                    ->content($message);
+            });
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param mixed $notifiable
-     * @return array
-     */
-    public function toArray($notifiable)
+    public function toDiscord($notifiable): DiscordMessage
     {
-        return [
-            //
-        ];
+        if (!empty($this->ref)) {
+            return DiscordMessage::create($this->message, $this->ref);
+        }
+
+        return DiscordMessage::create($this->message);
     }
 }
