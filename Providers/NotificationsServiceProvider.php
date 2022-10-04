@@ -38,22 +38,26 @@ class NotificationsServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(module_path($this->moduleName, 'Database/Migrations'));
 
         VILT::loadResources($this->moduleName);
+        VILT::loadPages($this->moduleName);
 
         $this->commands([
             InstallNotifications::class
         ]);
 
-        $path = str_replace("storage/", "", setting('google_firebase_config'));
-        if($path){
-            if(File::exists(storage_path('app/public/' . $path))) {
-                $json = File::get(storage_path('app/public/' . $path));
-                VILT::registerShareData(Share::make('fcm')->data([
-                    "config" => json_decode($json),
-                    "vapidKey" => setting('google_firebase_vapid')
-                ]));
-            }
-        }
+        VILT::registerShareData(Share::make('fcm')->data([
+            "config" => [
+                "apiKey"=> setting('fcm_apiKey'),
+                "authDomain"=> setting('fcm_authDomain'),
+                "projectId"=>  setting('fcm_projectId'),
+                "storageBucket"=> setting('fcm_storageBucket'),
+                "messagingSenderId"=>  setting('fcm_messagingSenderId'),
+                "appId"=> setting('fcm_appId'),
+                "measurementId"=>  setting('fcm_measurementId'),
+            ],
+            "vapidKey" => setting('google_firebase_vapid')
+        ]));
 
+        VILT::registerTranslation(Lang::make('notifications.sidebar')->label(__('Notifications Settings')));
         VILT::registerTranslation(Lang::make('notifiactions_templates.sidebar')->label(__('Notifications Templates')));
         VILT::registerTranslation(Lang::make('user_notifications.sidebar')->label(__('Notifications')));
         VILT::registerTranslation(Lang::make('notifications_logs.sidebar')->label(__('Notifications Logs')));

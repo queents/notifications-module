@@ -115,36 +115,36 @@ class NotificationsController extends Resource
 //        return back();
 //    }
 //
-//    public function token(Request $request)
-//    {
-//        $request->validate([
-//            "token" => "required|string",
-//            "provider" => "required|string",
-//            "model" => "required|string",
-//            "model_id" => "required"
-//        ]);
-//
-//        $checkEx = UserToken::where('model_type', $request->get('model'))
-//            ->where('model_id', $request->get('model_id'))
-//            ->where('provider', $request->get('provider'))
-//            ->first();
-//
-//        if (!$checkEx) {
-//            $token = new UserToken();
-//            $token->model_type = $request->get('model');
-//            $token->model_id = $request->get('model_id');
-//            $token->provider = $request->get('provider');
-//            $token->provider_token = $request->get('token');
-//            $token->save();
-//
-//            return back();
-//        } else {
-//            $checkEx->provider_token = $request->get('token');
-//            $checkEx->save();
-//
-//            return back();
-//        }
-//    }
+    public function token(Request $request)
+    {
+        $request->validate([
+            "token" => "required|string",
+            "provider" => "required|string",
+            "model" => "required|string",
+            "model_id" => "required"
+        ]);
+
+        $checkEx = UserToken::where('model_type', $request->get('model'))
+            ->where('model_id', $request->get('model_id'))
+            ->where('provider', $request->get('provider'))
+            ->first();
+
+        if (!$checkEx) {
+            $token = new UserToken();
+            $token->model_type = $request->get('model');
+            $token->model_id = $request->get('model_id');
+            $token->provider = $request->get('provider');
+            $token->provider_token = $request->get('token');
+            $token->save();
+
+            return back();
+        } else {
+            $checkEx->provider_token = $request->get('token');
+            $checkEx->save();
+
+            return back();
+        }
+    }
 //
 //    public  function  routes(){
 //        return [];

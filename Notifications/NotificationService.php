@@ -130,7 +130,7 @@ class NotificationService extends Notification
                 'type' => $this->type,
                 'privacy' => $this->privacy,
                 'model' => (string)$this->model,
-                'model_id' => (string)$this->model_id,
+                'model_id' => (string)$this->modelId,
             ])
             ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
                 ->setTitle($this->title)
@@ -162,7 +162,7 @@ class NotificationService extends Notification
             ->setOption('type', $this->type)
             ->setOption('privacy', $this->privacy)
             ->setOption('model', $this->model)
-            ->setOption('model_id', $this->model_id)
+            ->setOption('model_id', $this->modelId)
             ->withAndroid(
                 PusherMessage::create()
                     ->IOS()
