@@ -10,10 +10,10 @@ trait HasId
     private ?int $id = null;
 
     /**
-     * @param int $id
+     * @param ?int $id
      * @return $this
      */
-    public function id(int $id): static
+    public function id(?int $id): static
     {
         $this->id = $id;
         return $this;
