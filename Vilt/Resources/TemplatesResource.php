@@ -4,6 +4,7 @@ namespace Modules\Notifications\Vilt\Resources;
 
 use Illuminate\Http\Request;
 use Modules\Base\Services\Resource\Resource;
+use Modules\Base\Services\Rows\Icon;
 use Modules\Base\Services\Rows\Media;
 use Modules\Base\Services\Rows\Relation;
 use Modules\Base\Services\Rows\Schema;
@@ -12,16 +13,19 @@ use Modules\Base\Services\Rows\Text;
 use Modules\Notifications\Entities\NotifiactionsTemplates;
 use Modules\Notifications\Vilt\Resources\TemplatesResource\Traits\Components;
 use Modules\Notifications\Vilt\Resources\TemplatesResource\Traits\Methods;
+use Modules\Notifications\Vilt\Resources\TemplatesResource\Traits\Translations;
 use Spatie\Permission\Models\Role;
 
 class TemplatesResource extends Resource
 {
     use Methods;
     use Components;
+    use Translations;
 
     public ?string $model = NotifiactionsTemplates::class;
     public string $icon = "bx bxs-notification";
     public string $group = "Notifications";
+    public ?bool $menu = false;
 
     public function rows(): array
     {
@@ -63,7 +67,7 @@ class TemplatesResource extends Resource
                     "create" => "nullable|string",
                     "update" => "nullable|string",
                 ]),
-            Text::make('icon')->label(__('Icon'))->validation([
+            Icon::make('icon')->label(__('Icon'))->validation([
                 "create" => "nullable|string",
                 "update" => "nullable|string",
             ])->list(false),

@@ -10,13 +10,20 @@ use Modules\Base\Services\Rows\DateTime;
 use Modules\Base\Services\Rows\Select;
 use Modules\Base\Services\Rows\Text;
 use Modules\Notifications\Entities\NotificationsLogs;
+use Modules\Notifications\Vilt\Resources\NotificationsLogsResource\Traits\Methods;
+use Modules\Notifications\Vilt\Resources\NotificationsLogsResource\Traits\Translations;
+use Modules\Notifications\Vilt\Resources\NotificationsLogsResource\Traits\Components;
 
 class NotificationsLogsResource extends Resource
 {
+
+    use Components, Translations, Methods;
+
     public ?string $model = NotificationsLogs::class;
     public string $icon = "bx bx-history";
     public string $group = "Notifications";
     public ?bool $import = false;
+    public ?bool $menu = false;
 
     public function rows(): array
     {
@@ -33,21 +40,4 @@ class NotificationsLogsResource extends Resource
             DateTime::make('created_at')->label(__('Date')),
         ];
     }
-
-    public function afterIndex(LengthAwarePaginator $data,Request $request): void
-    {
-        $data->map(function ($item){
-            if ($item->model_id && $item->model_type) {
-                $item->model_id = $item->model_type::find($item->model_id);
-            } else {
-                $item->model_id = [
-                    "name" => __('Public'),
-                    "id" => "public"
-                ];
-            }
-
-            return $item;
-        });
-    }
-
 }

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use Modules\Accounts\Entities\Account;
 
 return [
     'name' => 'Notifications',
@@ -41,7 +42,8 @@ return [
     'provider' => "pusher",
 
     'models' => [
-        User::class
+        "Admins" => User::class,
+        "Accounts" => Account::class,
     ],
 
     'providers' => [
