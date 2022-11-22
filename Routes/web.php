@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 use Modules\Notifications\Http\Controllers\NotificationsController;
 
@@ -14,6 +15,9 @@ use Modules\Notifications\Http\Controllers\NotificationsController;
 |
 */
 
+Broadcast::channel('private.{userId}', function ($user, $userId) {
+    return true;
+});
 
  Route::middleware([
      'auth:sanctum',

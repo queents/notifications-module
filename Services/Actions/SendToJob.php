@@ -36,13 +36,62 @@ trait SendToJob
                 }
                 if (count($collectRoles)) {
                     if ($this->user->hasRole($collectRoles)) {
-                        NotificationJop::dispatch($arrgs);
+                        if($provider === 'socket'){
+                            \Modules\Notifications\Events\FireEvent::dispatch(
+                                $this->title,
+                                $this->message,
+                                $this->icon,
+                                $this->image,
+                                $this->url,
+                                $this->type,
+                                $this->privacy,
+                                $provider,
+                                $this->model,
+                                $this->user->id
+                            );
+                        }
+                        else {
+                            NotificationJop::dispatch($arrgs);
+                        }
+
                     }
                 } else {
-                    NotificationJop::dispatch($arrgs);
+                    if($provider === 'socket'){
+                        \Modules\Notifications\Events\FireEvent::dispatch(
+                            $this->title,
+                            $this->message,
+                            $this->icon,
+                            $this->image,
+                            $this->url,
+                            $this->type,
+                            $this->privacy,
+                            $provider,
+                            $this->model,
+                            $this->user->id
+                        );
+                    }
+                    else {
+                        NotificationJop::dispatch($arrgs);
+                    }
                 }
             } else {
-                NotificationJop::dispatch($arrgs);
+                if($provider === 'socket'){
+                    \Modules\Notifications\Events\FireEvent::dispatch(
+                        $this->title,
+                        $this->message,
+                        $this->icon,
+                        $this->image,
+                        $this->url,
+                        $this->type,
+                        $this->privacy,
+                        $provider,
+                        $this->model,
+                        $this->user->id
+                    );
+                }
+                else {
+                    NotificationJop::dispatch($arrgs);
+                }
             }
         }
     }

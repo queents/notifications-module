@@ -52,6 +52,10 @@ return [
             "id" => "database"
         ],
         [
+            "name" => "Socket",
+            "id" => "socket"
+        ],
+        [
             "name" => __('Email'),
             "id" => "email"
         ],
