@@ -1,0 +1,21 @@
+{
+    "name": "Notifications",
+    "alias": "notifications",
+    "description": "VILT Notifications Module with multi channels and vendors like FCM / Pusher",
+    "keywords": [
+        "laravel",
+        "notifications",
+        "laravel fcm",
+        "laravel pusher",
+        "ui",
+        "vilt-admin",
+        "Vilt stack"
+    ],
+    "priority": 1,
+    "providers": [
+        "Modules\\Notifications\\Providers\\NotificationsServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}
