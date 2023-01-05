@@ -26,7 +26,8 @@ trait SendToJob
                 "privacy" => $this->privacy,
                 "provider" => $provider,
                 "model" => $this->model,
-                "model_id" => $this->user->id
+                "model_id" => $this->user->id,
+                "data" => $this->data
             ];
 
             if (!empty($this->template)) {
@@ -47,7 +48,8 @@ trait SendToJob
                                 $this->privacy,
                                 $provider,
                                 $this->model,
-                                $this->user->id
+                                $this->user->id,
+                                $this->data
                             );
                         }
                         else {
@@ -67,7 +69,8 @@ trait SendToJob
                             $this->privacy,
                             $provider,
                             $this->model,
-                            $this->user->id
+                            $this->user->id,
+                            $this->data
                         );
                     }
                     else {
@@ -86,7 +89,9 @@ trait SendToJob
                         $this->privacy,
                         $provider,
                         $this->model,
-                        $this->user->id
+                        $this->user->id,
+                        $this->data
+
                     );
                 }
                 else {
