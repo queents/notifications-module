@@ -27,6 +27,7 @@ class NotificationJop implements ShouldQueue
     public ?string $model_id;
     public ?string $provider;
     public ?object $user;
+    public ?string $data;
 
     /**
      * Create a new notification instance.
@@ -45,8 +46,10 @@ class NotificationJop implements ShouldQueue
         $this->model  = $arrgs['model'];
         $this->model_id  = $arrgs['model_id'];
         $this->provider  = $arrgs['provider'];
+        $this->data  = $arrgs['data'];
         $user = $this->model::find($this->model_id);
         $this->user = $user;
+
     }
 
     /**
@@ -74,7 +77,8 @@ class NotificationJop implements ShouldQueue
             $this->privacy,
             $this->provider,
             $this->model,
-            (string)$this->model_id
+            (string)$this->model_id,
+            null,null,$this->data
         ));
 
         $log = new NotificationsLogs();

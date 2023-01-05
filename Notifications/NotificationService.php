@@ -5,6 +5,8 @@ namespace Modules\Notifications\Notifications;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Support\Facades\File;
+use Modules\Requests\Entities\Request;
+use Modules\Requests\Transformers\RequestResource;
 use NotificationChannels\Fcm\FcmChannel;
 use NotificationChannels\Fcm\FcmMessage;
 use Illuminate\Notifications\Notification;
@@ -37,6 +39,7 @@ class NotificationService extends Notification
     public ?string $provider;
     public ?string $phone;
     public ?string $email;
+    public ?string $data;
 
     /**
      * Create a new notification instance.
@@ -56,8 +59,10 @@ class NotificationService extends Notification
         $modelId = null,
         $phone = null,
         $email = null,
+        $data = null,
     )
     {
+
         $this->title = $title;
         $this->message  = $message;
         $this->icon  = $icon;
@@ -70,6 +75,8 @@ class NotificationService extends Notification
         $this->provider  = $provider;
         $this->phone  = $phone;
         $this->email  = $email;
+        $this->data  = $data;
+
     }
 
     /**
@@ -109,7 +116,7 @@ class NotificationService extends Notification
             ->subject($this->title)
             ->greeting($this->title)
             ->line($this->message)
-            ->action('Open Link', $this->url)
+//            ->action('Open Link', $this->url)
             ->line('Thank you for using our application!');
     }
 
@@ -131,6 +138,7 @@ class NotificationService extends Notification
                 'privacy' => $this->privacy,
                 'model' => (string)$this->model,
                 'model_id' => (string)$this->modelId,
+                'data' =>  $this->data??"" ,
             ])
             ->setNotification(\NotificationChannels\Fcm\Resources\Notification::create()
                 ->setTitle($this->title)
@@ -163,6 +171,7 @@ class NotificationService extends Notification
             ->setOption('privacy', $this->privacy)
             ->setOption('model', $this->model)
             ->setOption('model_id', $this->modelId)
+            ->setOption('data', $this->data)
             ->withAndroid(
                 PusherMessage::create()
                     ->IOS()

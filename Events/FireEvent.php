@@ -28,6 +28,7 @@ class FireEvent implements ShouldBroadcast
         public ?string $provider,
         public ?string $model,
         public ?string $model_id
+        public ?string $data
     ){}
 
     public function broadcastAs(): string
