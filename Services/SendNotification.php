@@ -10,6 +10,7 @@ use Modules\Notifications\Services\Actions\LoadTemplate;
 use Modules\Notifications\Services\Actions\SendToDatabase;
 use Modules\Notifications\Services\Actions\SendToJob;
 use Modules\Notifications\Services\Concerns\HasCreatedBy;
+use Modules\Notifications\Services\Concerns\HasData;
 use Modules\Notifications\Services\Concerns\HasFindBody;
 use Modules\Notifications\Services\Concerns\HasFindTitle;
 use Modules\Notifications\Services\Concerns\HasIcon;
@@ -52,6 +53,7 @@ class SendNotification
     use HasLang;
     use HasTemplateModel;
     use IsDatabase;
+    use HasData;
 
     /*
      * Actions
